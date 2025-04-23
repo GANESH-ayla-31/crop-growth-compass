@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/lib/supabase";
 import { Leaf, MapPin, Calendar, Box, TrendingUp, AlertTriangle, Cloud } from "lucide-react";
 import { Link } from "react-router-dom";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import { 
   BarChart, 
   Bar, 

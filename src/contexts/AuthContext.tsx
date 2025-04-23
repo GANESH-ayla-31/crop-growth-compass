@@ -1,6 +1,5 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +30,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get session from local storage if available
     const fetchSession = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error) {
@@ -47,7 +45,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     fetchSession();
 
-    // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         setSession(currentSession);
