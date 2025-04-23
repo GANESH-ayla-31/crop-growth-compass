@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,13 +32,11 @@ export function AuthForm() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
         });
 
         if (error) throw error;
-        toast.success("Signed up successfully! Please check your email to verify your account.");
+        toast.success("Signed up successfully!");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
