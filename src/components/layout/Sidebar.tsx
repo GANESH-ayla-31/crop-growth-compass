@@ -15,7 +15,8 @@ import {
   Wand,
   Truck,
   Wrench,
-  File
+  File,
+  IndianRupee
 } from "lucide-react";
 
 interface SidebarLinkProps {
@@ -112,7 +113,7 @@ export function Sidebar() {
           />
           <SidebarLink
             to="/market-prices"
-            icon={<TrendingUp className="h-4 w-4" />}
+            icon={<IndianRupee className="h-4 w-4" />}
             label="Market Prices"
             active={pathname === "/market-prices"}
           />

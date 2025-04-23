@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
-import { Leaf, MapPin, Calendar, Box, TrendingUp, AlertTriangle, Cloud } from "lucide-react";
+import { Leaf, MapPin, Calendar, Box, TrendingUp, AlertTriangle, Cloud, IndianRupee } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
 import { 
@@ -61,22 +62,22 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
-  // Sample data for charts
+  // Sample data for charts with Indian crops
   const cropYieldData = [
-    { name: "Wheat", yield: 4.8 },
-    { name: "Rice", yield: 5.2 },
-    { name: "Corn", yield: 6.1 },
+    { name: "Rice", yield: 4.8 },
+    { name: "Wheat", yield: 5.2 },
+    { name: "Bajra", yield: 6.1 },
     { name: "Potato", yield: 21.4 },
-    { name: "Tomato", yield: 18.3 },
+    { name: "Sugarcane", yield: 18.3 },
   ];
 
   const marketPriceData = [
-    { month: "Jan", wheat: 280, rice: 520, corn: 320 },
-    { month: "Feb", wheat: 300, rice: 530, corn: 340 },
-    { month: "Mar", wheat: 270, rice: 510, corn: 360 },
-    { month: "Apr", wheat: 290, rice: 540, corn: 380 },
-    { month: "May", wheat: 310, rice: 560, corn: 400 },
-    { month: "Jun", wheat: 320, rice: 580, corn: 410 },
+    { month: "Jan", wheat: 2800, rice: 5200, bajra: 3200 },
+    { month: "Feb", wheat: 3000, rice: 5300, bajra: 3400 },
+    { month: "Mar", wheat: 2700, rice: 5100, bajra: 3600 },
+    { month: "Apr", wheat: 2900, rice: 5400, bajra: 3800 },
+    { month: "May", wheat: 3100, rice: 5600, bajra: 4000 },
+    { month: "Jun", wheat: 3200, rice: 5800, bajra: 4100 },
   ];
 
   const inventoryData = [
@@ -90,8 +91,8 @@ const Dashboard = () => {
   const COLORS = ['#2D5A27', '#68A357', '#A67B5B', '#654321', '#87CEEB'];
 
   const upcomingTasks = [
-    { id: 1, name: "Harvest Wheat Field A", date: "2025-04-25", status: "pending" },
-    { id: 2, name: "Apply Fertilizer to Corn", date: "2025-04-26", status: "pending" },
+    { id: 1, name: "Harvest Rice Field A", date: "2025-04-25", status: "pending" },
+    { id: 2, name: "Apply Fertilizer to Bajra", date: "2025-04-26", status: "pending" },
     { id: 3, name: "Soil Testing Field B", date: "2025-04-27", status: "pending" },
     { id: 4, name: "Irrigation Maintenance", date: "2025-04-28", status: "pending" },
   ];
@@ -109,7 +110,7 @@ const Dashboard = () => {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Overview of your farming operations and key metrics.
+          Overview of your farming operations in India and key metrics.
         </p>
       </div>
 
@@ -205,7 +206,7 @@ const Dashboard = () => {
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Crop Yields (tons/acre)</CardTitle>
-            <CardDescription>Average yield for major crops</CardDescription>
+            <CardDescription>Average yield for major Indian crops</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="h-[300px] w-full">
@@ -224,8 +225,8 @@ const Dashboard = () => {
 
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Market Price Trends ($/ton)</CardTitle>
-            <CardDescription>Last 6 months price trends</CardDescription>
+            <CardTitle>Market Price Trends (₹/quintal)</CardTitle>
+            <CardDescription>Last 6 months price trends in Indian Rupees</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="h-[300px] w-full">
@@ -234,11 +235,11 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [`₹${value}`, 'Price']} />
                   <Legend />
                   <Line type="monotone" dataKey="wheat" stroke="#2D5A27" activeDot={{ r: 8 }} />
                   <Line type="monotone" dataKey="rice" stroke="#68A357" />
-                  <Line type="monotone" dataKey="corn" stroke="#A67B5B" />
+                  <Line type="monotone" dataKey="bajra" stroke="#A67B5B" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -316,7 +317,7 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div className="flex items-center space-x-2">
               <Cloud className="h-4 w-4 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">Weather Forecast</CardTitle>
+              <CardTitle className="text-sm font-medium">Weather Forecast - Delhi</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -325,7 +326,7 @@ const Dashboard = () => {
                 <div key={day} className="flex flex-col items-center border rounded p-2">
                   <div className="font-medium">{day}</div>
                   <Cloud className={`h-6 w-6 my-1 ${idx === 2 ? "text-blue-500" : "text-yellow-500"}`} />
-                  <div className="text-sm">{19 + idx}°C</div>
+                  <div className="text-sm">{32 + idx}°C</div>
                 </div>
               ))}
             </div>
@@ -349,7 +350,7 @@ const Dashboard = () => {
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-amber-800">Pest Alert</h3>
                     <div className="mt-2 text-sm text-amber-700">
-                      <p>Increased aphid activity detected in Wheat fields. Consider inspection.</p>
+                      <p>Increased aphid activity detected in Wheat fields near Agra. Consider inspection.</p>
                     </div>
                   </div>
                 </div>
@@ -362,7 +363,7 @@ const Dashboard = () => {
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-blue-800">Weather Advisory</h3>
                     <div className="mt-2 text-sm text-blue-700">
-                      <p>Heavy rain expected on Wednesday. Consider delaying fertilizer application.</p>
+                      <p>Heavy rain expected in Punjab on Wednesday. Consider delaying fertilizer application.</p>
                     </div>
                   </div>
                 </div>

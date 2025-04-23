@@ -14,6 +14,7 @@ import Farmers from "./pages/Farmers";
 import Farms from "./pages/Farms";
 import Crops from "./pages/Crops";
 import NotFound from "./pages/NotFound";
+import PlaceholderPage from "./pages/PlaceholderPage"; // We'll create this next
 
 // Layout
 import { AppLayout } from "./components/layout/AppLayout";
@@ -38,7 +39,19 @@ const App = () => (
               <Route path="/farmers" element={<Farmers />} />
               <Route path="/farms" element={<Farms />} />
               <Route path="/crops" element={<Crops />} />
-              {/* Add more routes as needed */}
+              
+              {/* Added routes for all sidebar links */}
+              <Route path="/crop-cycles" element={<PlaceholderPage title="Crop Cycles" />} />
+              <Route path="/growth-records" element={<PlaceholderPage title="Growth Records" />} />
+              <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
+              <Route path="/suppliers" element={<PlaceholderPage title="Suppliers" />} />
+              <Route path="/equipment" element={<PlaceholderPage title="Equipment" />} />
+              <Route path="/market-prices" element={<PlaceholderPage title="Market Prices" />} />
+              <Route path="/weather" element={<PlaceholderPage title="Weather" />} />
+              <Route path="/soil" element={<PlaceholderPage title="Soil Analysis" />} />
+              <Route path="/recommendations" element={<PlaceholderPage title="Recommendations" />} />
+              <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+              <Route path="/tasks" element={<PlaceholderPage title="Tasks" />} />
             </Route>
             
             {/* Catch all */}
