@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,46 +51,32 @@ const Farms = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (isEditDialogOpen) {
+      fetchFarmers();
+    }
+  }, [isEditDialogOpen]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      // In a full application, this would fetch from Supabase
-      // For now, let's use mock data
-      setTimeout(() => {
-        const mockFarmers: Farmer[] = [
-          {
-            id: '1',
-            first_name: 'John',
-            last_name: 'Farmer',
-            email: 'john@farmexample.com',
-            phone: '555-123-4567',
-            address: '123 Farm Road, Countryside',
-            created_at: '2025-01-10T00:00:00',
-            updated_at: '2025-01-10T00:00:00',
-          },
-          {
-            id: '2',
-            first_name: 'Sarah',
-            last_name: 'Fields',
-            email: 'sarah@farmexample.com',
-            phone: '555-765-4321',
-            address: '456 Harvest Lane, Ruraltown',
-            created_at: '2025-01-15T00:00:00',
-            updated_at: '2025-01-15T00:00:00',
-          },
-          {
-            id: '3',
-            first_name: 'Michael',
-            last_name: 'Planter',
-            email: 'michael@farmexample.com',
-            phone: '555-987-6543',
-            address: '789 Crop Circle, Agriville',
-            created_at: '2025-02-05T00:00:00',
-            updated_at: '2025-02-05T00:00:00',
-          },
-        ];
-        setFarmers(mockFarmers);
+      await fetchFarms();
+      await fetchFarmers();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load data");
+      setLoading(false);
+    }
+  };
 
+  const fetchFarms = async () => {
+    try {
+      const storedFarms = localStorage.getItem('farms');
+      
+      if (storedFarms) {
+        setFarms(JSON.parse(storedFarms));
+      } else {
         const mockFarms: Farm[] = [
           {
             id: '1',
@@ -139,12 +124,59 @@ const Farms = () => {
           },
         ];
         setFarms(mockFarms);
-        setLoading(false);
-      }, 800);
+        localStorage.setItem('farms', JSON.stringify(mockFarms));
+      }
     } catch (error) {
-      console.error("Error fetching farms data:", error);
-      toast.error("Failed to load farms data");
-      setLoading(false);
+      console.error("Error fetching farms:", error);
+      toast.error("Failed to load farms");
+    }
+  };
+
+  const fetchFarmers = async () => {
+    try {
+      const storedFarmers = localStorage.getItem('farmers');
+      
+      if (storedFarmers) {
+        setFarmers(JSON.parse(storedFarmers));
+      } else {
+        const mockFarmers: Farmer[] = [
+          {
+            id: '1',
+            first_name: 'John',
+            last_name: 'Farmer',
+            email: 'john@farmexample.com',
+            phone: '555-123-4567',
+            address: '123 Farm Road, Countryside',
+            created_at: '2025-01-10T00:00:00',
+            updated_at: '2025-01-10T00:00:00',
+          },
+          {
+            id: '2',
+            first_name: 'Sarah',
+            last_name: 'Fields',
+            email: 'sarah@farmexample.com',
+            phone: '555-765-4321',
+            address: '456 Harvest Lane, Ruraltown',
+            created_at: '2025-01-15T00:00:00',
+            updated_at: '2025-01-15T00:00:00',
+          },
+          {
+            id: '3',
+            first_name: 'Michael',
+            last_name: 'Planter',
+            email: 'michael@farmexample.com',
+            phone: '555-987-6543',
+            address: '789 Crop Circle, Agriville',
+            created_at: '2025-02-05T00:00:00',
+            updated_at: '2025-02-05T00:00:00',
+          },
+        ];
+        setFarmers(mockFarmers);
+        localStorage.setItem('farmers', JSON.stringify(mockFarmers));
+      }
+    } catch (error) {
+      console.error("Error fetching farmers:", error);
+      toast.error("Failed to load farmers");
     }
   };
 
@@ -180,18 +212,16 @@ const Farms = () => {
 
     try {
       const newFarm: Farm = {
-        id: Date.now().toString(), // In real app, this would be handled by Supabase
+        id: Date.now().toString(),
         ...currentFarm as Omit<Farm, 'id' | 'created_at' | 'updated_at'>,
         size: Number(currentFarm.size),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       } as Farm;
 
-      // In a real app, this would be saved to Supabase
-      // const { data, error } = await supabase.from('farms').insert([newFarm]);
-
-      // Add the new farm to our state
-      setFarms((prev) => [...prev, newFarm]);
+      const updatedFarms = [...farms, newFarm];
+      setFarms(updatedFarms);
+      localStorage.setItem('farms', JSON.stringify(updatedFarms));
 
       toast.success("Farm added successfully");
       setCurrentFarm({});
@@ -217,16 +247,9 @@ const Farms = () => {
         updated_at: new Date().toISOString(),
       };
 
-      // In a real app, this would update the record in Supabase
-      // const { data, error } = await supabase
-      //   .from('farms')
-      //   .update(updatedFarm)
-      //   .eq('id', currentFarm.id);
-
-      // Update the farm in our state
-      setFarms((prev) =>
-        prev.map((f) => (f.id === currentFarm.id ? updatedFarm as Farm : f))
-      );
+      const updatedFarms = farms.map((f) => (f.id === currentFarm.id ? updatedFarm as Farm : f));
+      setFarms(updatedFarms);
+      localStorage.setItem('farms', JSON.stringify(updatedFarms));
 
       toast.success("Farm updated successfully");
       setCurrentFarm({});
@@ -239,11 +262,9 @@ const Farms = () => {
 
   const handleDeleteFarm = async (id: string) => {
     try {
-      // In a real app, this would delete from Supabase
-      // const { data, error } = await supabase.from('farms').delete().eq('id', id);
-
-      // Remove the farm from our state
-      setFarms((prev) => prev.filter((f) => f.id !== id));
+      const updatedFarms = farms.filter((f) => f.id !== id);
+      setFarms(updatedFarms);
+      localStorage.setItem('farms', JSON.stringify(updatedFarms));
 
       toast.success("Farm deleted successfully");
     } catch (error) {
