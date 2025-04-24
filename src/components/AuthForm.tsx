@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,39 +7,60 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   async function handleAuth(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        // Login flow
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-        toast.success("Signed in successfully");
-        navigate("/dashboard");
+        
+        if (data.user) {
+          toast.success("Signed in successfully");
+          navigate("/dashboard");
+        }
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Signup flow
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
 
         if (error) throw error;
-        toast.success("Signed up successfully!");
-        navigate("/dashboard");
+        
+        if (data.user) {
+          // If email confirmation is required (default in Supabase)
+          if (data.session === null) {
+            toast.info("Please check your email for confirmation link before logging in.");
+            setIsLogin(true); // Switch to login mode
+          } else {
+            // If auto-confirmed
+            toast.success("Signed up successfully!");
+            navigate("/dashboard");
+          }
+        }
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
+      setErrorMessage(error.message || "Authentication failed");
       toast.error(error.message || "Authentication failed");
     } finally {
       setIsLoading(false);
@@ -57,6 +79,11 @@ export function AuthForm() {
       </CardHeader>
       <form onSubmit={handleAuth}>
         <CardContent className="space-y-4">
+          {errorMessage && (
+            <Alert variant="destructive">
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -81,13 +108,25 @@ export function AuthForm() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : isLogin ? (
+              "Sign In"
+            ) : (
+              "Sign Up"
+            )}
           </Button>
           <Button
             type="button"
             variant="link"
             className="w-full"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setErrorMessage("");
+            }}
           >
             {isLogin ? "Need an account? Sign Up" : "Already have an account? Sign In"}
           </Button>
