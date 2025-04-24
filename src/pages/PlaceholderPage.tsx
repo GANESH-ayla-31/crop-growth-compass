@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IndianRupee, MapPin, Leaf, Tractor, Cloud, ChartBar, Package, Thermometer, Calendar } from "lucide-react";
@@ -165,6 +164,110 @@ const PlaceholderPage = ({ title }: PlaceholderPageProps) => {
                     "text-red-600"
                   }`}>{equipment.status}</p>
                   <p>{equipment.location}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        );
+
+      case "Crop Cycles":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { crop: "Wheat", field: "North Field", sowingDate: "2025-03-15", harvestDate: "2025-07-15", status: "growing", progress: "45%" },
+              { crop: "Rice", field: "East Field", sowingDate: "2025-04-01", harvestDate: "2025-08-30", status: "sowing", progress: "10%" },
+              { crop: "Sugarcane", field: "South Field", sowingDate: "2024-12-01", harvestDate: "2025-11-30", status: "growing", progress: "60%" },
+              { crop: "Cotton", field: "West Field", sowingDate: "2025-04-10", harvestDate: "2025-10-15", status: "planned", progress: "0%" },
+            ].map((cycle) => (
+              <Card key={cycle.field}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{cycle.crop}</CardTitle>
+                  <CardDescription>{cycle.field}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p>Sowing: {cycle.sowingDate}</p>
+                    <p>Expected Harvest: {cycle.harvestDate}</p>
+                    <div className="flex items-center gap-2">
+                      <span className={
+                        cycle.status === "growing" ? "text-green-600" :
+                        cycle.status === "sowing" ? "text-blue-600" :
+                        "text-amber-600"
+                      }>{cycle.status}</span>
+                      <span className="text-sm text-muted-foreground">({cycle.progress} complete)</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        );
+
+      case "Growth Records":
+        return (
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Crop</TableHead>
+                  <TableHead>Stage</TableHead>
+                  <TableHead>Health</TableHead>
+                  <TableHead>Last Inspection</TableHead>
+                  <TableHead>Issues</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { crop: "Wheat - North Field", stage: "Vegetative", health: "Excellent", date: "2025-04-23", issues: "None" },
+                  { crop: "Rice - East Field", stage: "Seedling", health: "Good", date: "2025-04-22", issues: "Minor pest presence" },
+                  { crop: "Sugarcane - South Field", stage: "Maturation", health: "Fair", date: "2025-04-21", issues: "Water stress" },
+                  { crop: "Cotton - West Field", stage: "Pre-sowing", health: "N/A", date: "2025-04-20", issues: "Soil preparation pending" },
+                ].map((record) => (
+                  <TableRow key={record.crop}>
+                    <TableCell>{record.crop}</TableCell>
+                    <TableCell>{record.stage}</TableCell>
+                    <TableCell className={
+                      record.health === "Excellent" ? "text-green-600" :
+                      record.health === "Good" ? "text-blue-600" :
+                      record.health === "Fair" ? "text-amber-600" :
+                      "text-gray-600"
+                    }>{record.health}</TableCell>
+                    <TableCell>{record.date}</TableCell>
+                    <TableCell>{record.issues}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        );
+
+      case "Suppliers":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { name: "AgriSeeds India Ltd.", type: "Seeds", location: "Punjab", rating: "Preferred", lastOrder: "2025-03-15" },
+              { name: "FertilizerCorp", type: "Fertilizers", location: "Maharashtra", rating: "Approved", lastOrder: "2025-04-01" },
+              { name: "Green Equipment Co.", type: "Equipment", location: "Gujarat", rating: "Preferred", lastOrder: "2025-02-28" },
+              { name: "Bio Pesticides Ltd.", type: "Pesticides", location: "Karnataka", rating: "Under Review", lastOrder: "2025-03-20" },
+              { name: "Irrigation Systems Inc.", type: "Equipment", location: "Haryana", rating: "Approved", lastOrder: "2025-04-10" },
+              { name: "Organic Nutrients Pvt.", type: "Fertilizers", location: "Tamil Nadu", rating: "New", lastOrder: "2025-04-15" },
+            ].map((supplier) => (
+              <Card key={supplier.name}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{supplier.name}</CardTitle>
+                  <CardDescription>{supplier.type}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p>Location: {supplier.location}</p>
+                    <p>Last Order: {supplier.lastOrder}</p>
+                    <p className={
+                      supplier.rating === "Preferred" ? "text-green-600" :
+                      supplier.rating === "Approved" ? "text-blue-600" :
+                      supplier.rating === "Under Review" ? "text-amber-600" :
+                      "text-gray-600"
+                    }>Status: {supplier.rating}</p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
