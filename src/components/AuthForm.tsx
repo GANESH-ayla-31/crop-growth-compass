@@ -25,7 +25,6 @@ export function AuthForm() {
 
     try {
       if (isLogin) {
-        // Login flow
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -38,24 +37,30 @@ export function AuthForm() {
           navigate("/dashboard");
         }
       } else {
-        // Signup flow
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: {
+              email_confirmed: true
+            }
+          }
         });
 
         if (error) throw error;
         
         if (data.user) {
-          // If email confirmation is required (default in Supabase)
-          if (data.session === null) {
-            toast.info("Please check your email for confirmation link before logging in.");
-            setIsLogin(true); // Switch to login mode
-          } else {
-            // If auto-confirmed
-            toast.success("Signed up successfully!");
-            navigate("/dashboard");
-          }
+          toast.success("Signed up successfully!");
+          // Automatically sign in after signup
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (signInError) throw signInError;
+          
+          navigate("/dashboard");
         }
       }
     } catch (error: any) {
