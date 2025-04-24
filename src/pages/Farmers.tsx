@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,8 +48,10 @@ const Farmers = () => {
     try {
       // In a full application, this would fetch from Supabase
       // For now, let's use mock data
+      const storedFarmers = localStorage.getItem('farmers');
+      
       setTimeout(() => {
-        const mockFarmers: Farmer[] = [
+        let mockFarmers: Farmer[] = [
           {
             id: '1',
             first_name: 'John',
@@ -82,6 +83,13 @@ const Farmers = () => {
             updated_at: '2025-02-05T00:00:00',
           },
         ];
+        
+        if (storedFarmers) {
+          mockFarmers = JSON.parse(storedFarmers);
+        } else {
+          localStorage.setItem('farmers', JSON.stringify(mockFarmers));
+        }
+        
         setFarmers(mockFarmers);
         setLoading(false);
       }, 800);
@@ -117,8 +125,10 @@ const Farmers = () => {
       // In a real app, this would be saved to Supabase
       // const { data, error } = await supabase.from('farmers').insert([newFarmer]);
       
-      // Add the new farmer to our state
-      setFarmers((prev) => [...prev, newFarmer]);
+      // Add the new farmer to our state and localStorage
+      const updatedFarmers = [...farmers, newFarmer];
+      setFarmers(updatedFarmers);
+      localStorage.setItem('farmers', JSON.stringify(updatedFarmers));
       
       toast.success("Farmer added successfully");
       setCurrentFarmer({});
@@ -149,10 +159,12 @@ const Farmers = () => {
       //   .update(updatedFarmer)
       //   .eq('id', currentFarmer.id);
       
-      // Update the farmer in our state
-      setFarmers((prev) => 
-        prev.map((f) => (f.id === currentFarmer.id ? updatedFarmer as Farmer : f))
+      // Update the farmer in our state and localStorage
+      const updatedFarmers = farmers.map((f) => 
+        f.id === currentFarmer.id ? updatedFarmer as Farmer : f
       );
+      setFarmers(updatedFarmers);
+      localStorage.setItem('farmers', JSON.stringify(updatedFarmers));
       
       toast.success("Farmer updated successfully");
       setCurrentFarmer({});
@@ -168,8 +180,10 @@ const Farmers = () => {
       // In a real app, this would delete from Supabase
       // const { data, error } = await supabase.from('farmers').delete().eq('id', id);
       
-      // Remove the farmer from our state
-      setFarmers((prev) => prev.filter((f) => f.id !== id));
+      // Remove the farmer from our state and localStorage
+      const updatedFarmers = farmers.filter((f) => f.id !== id);
+      setFarmers(updatedFarmers);
+      localStorage.setItem('farmers', JSON.stringify(updatedFarmers));
       
       toast.success("Farmer deleted successfully");
     } catch (error) {

@@ -37,20 +37,32 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // In a real application, these would be actual database queries
-        // For now, we'll use mock data
-
-        // Simulate API calls
+        // Get actual counts from localStorage
+        const storedFarmers = localStorage.getItem('farmers');
+        const storedFarms = localStorage.getItem('farms');
+        const storedCrops = localStorage.getItem('crops');
+        const storedCropCycles = localStorage.getItem('cropCycles');
+        const storedInventory = localStorage.getItem('inventory');
+        const storedTasks = localStorage.getItem('tasks');
+        
+        const farmers = storedFarmers ? JSON.parse(storedFarmers) : [];
+        const farms = storedFarms ? JSON.parse(storedFarms) : [];
+        const crops = storedCrops ? JSON.parse(storedCrops) : [];
+        const cropCycles = storedCropCycles ? JSON.parse(storedCropCycles) : [];
+        const inventory = storedInventory ? JSON.parse(storedInventory) : [];
+        const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+        
+        // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         setStats({
-          farmers: 24,
-          farms: 38,
-          crops: 16,
-          cropCycles: 42,
-          inventory: 87,
-          tasks: 53,
-          pendingTasks: 12,
+          farmers: farmers.length,
+          farms: farms.length || 38,
+          crops: crops.length || 16,
+          cropCycles: cropCycles.length || 42,
+          inventory: inventory.length || 87,
+          tasks: tasks.length || 53,
+          pendingTasks: tasks ? tasks.filter((t: any) => t.status === 'pending').length : 12,
         });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
